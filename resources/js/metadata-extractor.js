@@ -28,7 +28,7 @@ export function initMetadataExtractor() {
 
             renderResult(resultBox, data);
         } catch (err) {
-            resultBox.innerHTML = `<p class="text-red-500">Gagal menghubungi server.</p>`;
+            resultBox.innerHTML = `<p class="text-red-500">url tidak valid</p>`;
         }
     });
 }

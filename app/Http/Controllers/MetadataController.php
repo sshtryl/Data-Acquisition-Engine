@@ -23,8 +23,13 @@ class MetadataController extends Controller
         try {
             $metadata = $this->metadataExtractorService->extractMetadata($request->input('url'));
             return response()->json($metadata);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 400);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+        return response()->json([
+            'error' => $e->errors()['url'][0] ?? 'URL tidak valid.',
+        ], 422);
+        }
+        catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 400);
         }
     }
 }
