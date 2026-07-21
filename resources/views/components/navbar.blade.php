@@ -28,7 +28,7 @@
                   <a href="/company-intelligence" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Company Location Finder</a>
                 </li>
                 <li>
-                  <a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Final Integration</a>
+                  <a href="/final-integration" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Final Integration</a>
                 </li>
               </ul>
           </div>

@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MetadataController;
 use App\Http\Controllers\DomainController;
+use App\Http\Controllers\LocationController;
+use Symfony\Component\Routing\Loader\Configurator\Routes;
 
 Route::get('/', function () {
     return view('pages.home');
@@ -21,4 +23,11 @@ Route::post('/domain-intelligence/lookup', [DomainController::class, 'lookup'])-
 
 Route::get('/company-intelligence', function () {
     return view('pages.location');
+});
+
+Route::get('/company-intelligence', [LocationController::class, 'index'])->name('location.index');
+Route::post('/company-intelligence/search', [LocationController::class, 'search'])->name('location.search');
+
+Route::get('/final-integration', function () {
+    return view('pages.finalintegration');
 });

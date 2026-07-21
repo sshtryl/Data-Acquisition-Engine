@@ -9,19 +9,19 @@
         Analyze company location using OpenStreetMap
     </p>
 
-    <form class="max-w-md mx-auto mt-10" action="{{ route('domain.lookup') }}" data-domain-form>
-    <label for="domain" class="block mb-2.5 text-sm font-medium text-heading sr-only">Domain input</label>
+      <form class="max-w-md mx-auto mt-10" action="{{ route('location.search') }}" data-location-form>
+    <label for="query" class="block mb-2.5 text-sm font-medium text-heading sr-only">Company name input</label>
     <div class="relative">
-        <input type="search" id="domain" name="domain" class="block w-full p-3 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" placeholder="Enter domain" required />
+        <input type="search" id="query" name="query" class="block w-full p-3 bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand shadow-xs placeholder:text-body" placeholder="Enter company name (e.g. PT Telkom Indonesia)" required />
         <button type="submit" class="absolute end-1.5 bottom-1.5 text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded text-xs px-3 py-1.5 focus:outline-none">Execute</button>
     </div>
 </form>
 
 <div class="max-w-2xl mx-auto mt-10">
     <div class="bg-neutral-secondary-medium border border-default-medium rounded-base p-4">
-        <h2 class="text-lg font-semibold text-heading mb-2">Enter a domain to find location using OpenStreetMap</h2>
-        <p class="text-sm text-body">Here is the domain location from the provided domain:</p>
-        <div class="mt-2 space-y-2 text-sm text-body" data-domain-result></div>
+        <h2 class="text-lg font-semibold text-heading mb-2">Enter a company name to find its location using OpenStreetMap</h2>
+        <p class="text-sm text-body">Here is the location intelligence from the provided company:</p>
+        <div class="mt-2 space-y-2 text-sm text-body" data-location-result></div>
     </div>
 </div>
 
