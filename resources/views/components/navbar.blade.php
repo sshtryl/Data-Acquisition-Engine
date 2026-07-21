@@ -25,7 +25,7 @@
                   <a href="/domain-intelligence" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Domain Intelligence</a>
                 </li>
                 <li>
-                  <a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Company Location Finder</a>
+                  <a href="/company-intelligence" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Company Location Finder</a>
                 </li>
                 <li>
                   <a href="#" class="inline-flex items-center w-full p-2 hover:bg-neutral-tertiary-medium hover:text-heading rounded">Final Integration</a>

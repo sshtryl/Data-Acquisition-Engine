@@ -1,12 +1,12 @@
 @extends('layouts.default')
 
 @section('content')
-        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-34">
+   <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 pt-34">
          <h1 class="text-2xl font-semibold text-heading text-center md:text-3xl">
-        Domain Intelligence
+        Company Location Finder
     </h1>
     <p class="mt-2 text-center text-sm text-body">
-        Analyze domain registration intelligence using RDAP
+        Analyze company location using OpenStreetMap
     </p>
 
     <form class="max-w-md mx-auto mt-10" action="{{ route('domain.lookup') }}" data-domain-form>
@@ -19,8 +19,8 @@
 
 <div class="max-w-2xl mx-auto mt-10">
     <div class="bg-neutral-secondary-medium border border-default-medium rounded-base p-4">
-        <h2 class="text-lg font-semibold text-heading mb-2">Enter a domain to analyze using RDAP</h2>
-        <p class="text-sm text-body">Here is the domain intelligence from the provided domain:</p>
+        <h2 class="text-lg font-semibold text-heading mb-2">Enter a domain to find location using OpenStreetMap</h2>
+        <p class="text-sm text-body">Here is the domain location from the provided domain:</p>
         <div class="mt-2 space-y-2 text-sm text-body" data-domain-result></div>
     </div>
 </div>

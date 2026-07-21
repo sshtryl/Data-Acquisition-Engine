@@ -18,3 +18,7 @@ Route::get('/domain-intelligence', function () {
 
 Route::get('/domain-intelligence', [DomainController::class, 'index'])->name('domain.index');
 Route::post('/domain-intelligence/lookup', [DomainController::class, 'lookup'])->name('domain.lookup');
+
+Route::get('/company-intelligence', function () {
+    return view('pages.location');
+});
