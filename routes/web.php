@@ -5,6 +5,7 @@ use App\Http\Controllers\MetadataController;
 use App\Http\Controllers\DomainController;
 use App\Http\Controllers\LocationController;
 use Symfony\Component\Routing\Loader\Configurator\Routes;
+use App\Http\Controllers\FinalIntegration;
 
 Route::get('/', function () {
     return view('pages.home');
@@ -31,3 +32,4 @@ Route::post('/company-intelligence/search', [LocationController::class, 'search'
 Route::get('/final-integration', function () {
     return view('pages.finalintegration');
 });
+Route::get('/company-information', [FinalIntegration::class, 'show'])->name('company.information');
