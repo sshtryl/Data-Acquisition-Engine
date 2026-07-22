@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\DomainIntelligenceService;
 use Illuminate\Http\Request;
 
-class DomainController extends Controller
+class DomainIntelligenceController extends Controller
 {
     protected $domainIntelligenceService;
 

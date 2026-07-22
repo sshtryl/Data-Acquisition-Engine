@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\MetadataExtractorService;
 use Illuminate\Http\Request;
 
-class MetadataController extends Controller
+class MetadataExtractorController extends Controller
 {
     protected $metadataExtractorService;
 

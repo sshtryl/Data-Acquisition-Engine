@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
 use App\Services\MetadataExtractorService;
 use App\Services\DomainIntelligenceService;
 use App\Services\CompanyLocationService;

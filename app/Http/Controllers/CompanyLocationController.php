@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\CompanyLocationService;
 use Illuminate\Http\Request;
 
-class LocationController extends Controller
+class CompanyLocationController extends Controller
 {
     protected $companyLocationService;
 

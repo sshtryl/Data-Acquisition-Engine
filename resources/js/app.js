@@ -1,8 +1,8 @@
 import { initDarkMode } from './dark-mode';
-import { initMetadataExtractor } from './metadata-extractor';
-import { initDomainIntelligence } from './domain-intelligence';
-import { initCompanyLocation } from './company-location-finder';
-import { initFinalIntegration } from './final-integration';
+import { initMetadataExtractor } from './MetadataExtractor';
+import { initDomainIntelligence } from './DomainIntelligence';
+import { initCompanyLocation } from './CompanyLocation';
+import { initFinalIntegration } from './FinalIntegration';
 
 document.addEventListener('DOMContentLoaded', () => {
     initDarkMode();
