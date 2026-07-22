@@ -1,58 +1,246 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Data Acquisition Engine
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi Laravel untuk mengekstrak informasi perusahaan dari berbagai sumber publik: metadata website, data registrasi domain (RDAP), dan lokasi geografis (OpenStreetMap Nominatim) — digabung menjadi satu endpoint terintegrasi.
 
-## About Laravel
+## Daftar Isi
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- [Arsitektur](#arsitektur)
+- [Instalasi](#instalasi)
+- [Konfigurasi](#konfigurasi)
+- [Menjalankan Aplikasi](#menjalankan-aplikasi)
+- [Dokumentasi Endpoint](#dokumentasi-endpoint)
+- [Testing dengan Postman](#testing-dengan-postman)
+- [Asumsi](#asumsi)
+- [Kendala & Keterbatasan](#kendala--keterbatasan)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Arsitektur
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Project ini menggunakan pola **MVC + Service Layer**:
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```
+Request
+   ↓
+Route (routes/web.php)
+   ↓
+Controller (app/Http/Controllers/)      → validasi input, error handling
+   ↓
+Service (app/Services/)                 → business logic, fetch API eksternal
+   ↓
+Response JSON  →  atau  →  Blade View + JS module (resources/)
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+| Layer | Tanggung jawab |
+|---|---|
+| Controller | Terima request, validasi, panggil Service, format response |
+| Service | Logic murni: fetch API eksternal, parsing data — tidak menyentuh HTTP request/response |
+| Blade View | Tampilan/UI per fitur |
+| JS Module | Submit form via `fetch()`, render hasil ke DOM tanpa reload halaman |
 
-## Contributing
+## Instalasi
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+**Requirement:** PHP 8.2+, Composer, Node.js 18+, npm
 
-## Code of Conduct
+```bash
+# 1. Clone repository
+git clone https://github.com/sshtryl/Data-Acquisition-Engine.git
+cd <nama-folder>
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 2. Install dependency PHP
+composer install
 
-## Security Vulnerabilities
+# 3. Install dependency JS
+npm install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 4. Copy file environment
+cp .env.example .env
 
-## License
+# 5. Generate application key
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 6. Jalankan migration (jika ada tabel yang dipakai)
+php artisan migrate
+```
+
+## Konfigurasi
+
+Buka file `.env`, pastikan konfigurasi berikut sesuai:
+
+```env
+APP_NAME="Data Acquisition Engine"
+APP_URL=http://localhost:8000
+
+DB_CONNECTION=sqlite
+```
+
+Tidak ada API key eksternal yang diperlukan — seluruh layanan (RDAP, Nominatim) bersifat publik dan gratis.
+
+**Catatan penting untuk Nominatim (OpenStreetMap):** API ini mewajibkan header `User-Agent` yang identifiable. Sudah diatur di `CompanyLocationService`, tapi disarankan mengganti email placeholder di dalamnya dengan email asli sebelum deploy ke production, untuk menghindari rate limit/pemblokiran dari OSM.
+
+## Menjalankan Aplikasi
+
+Buka 2 terminal terpisah:
+
+```bash
+# Terminal 1 — jalankan server Laravel
+php artisan serve
+
+# Terminal 2 — compile asset (CSS/JS) dan watch perubahan
+npm run dev
+```
+
+Aplikasi bisa diakses di `http://localhost:8000`.
+
+Untuk build production:
+```bash
+npm run build
+```
+
+## Dokumentasi Endpoint
+
+Seluruh endpoint mengembalikan response dalam format **JSON**, dengan format error yang konsisten:
+```json
+{ "error": "Pesan error yang menjelaskan masalahnya" }
+```
+
+### 1. Extract Website Metadata
+
+```
+POST /extract/website
+Content-Type: application/json
+```
+
+**Request body:**
+```json
+{ "url": "https://paper.id" }
+```
+
+**Response (200):**
+```json
+{
+    "url": "https://paper.id",
+    "title": "Paper.id",
+    "description": "...",
+    "canonical": "https://paper.id",
+    "favicon": "/favicon.ico",
+    "email": ["contact@paper.id"],
+    "phone": ["+622112345678"],
+    "social_media": ["https://facebook.com/paper.id"],
+    "open_graph": {
+        "title": "...",
+        "description": "...",
+        "image": "..."
+    }
+}
+```
+
+### 2. Extract Domain Intelligence
+
+```
+POST /extract/domain
+Content-Type: application/json
+```
+
+**Request body:**
+```json
+{ "domain": "paper.id" }
+```
+
+**Response (200):**
+```json
+{
+    "domain": "paper.id",
+    "registrar": "PT ...",
+    "registered_at": "2018-01-01T00:00:00Z",
+    "expired_at": "2027-01-01T00:00:00Z",
+    "last_updated": "2025-01-01T00:00:00Z",
+    "status": ["active"],
+    "nameservers": ["ns1.example.com", "ns2.example.com"]
+}
+```
+
+### 3. Extract Company Location
+
+```
+POST /extract/location
+Content-Type: application/json
+```
+
+**Request body:**
+```json
+{ "query": "PT Telkom Indonesia" }
+```
+
+**Response (200):**
+```json
+{
+    "display_name": "PT Telkom Indonesia, ...",
+    "latitude": "-6.9024657",
+    "longitude": "107.6186597",
+    "importance": "0.6",
+    "osm_type": "way",
+    "address": {
+        "road": "...",
+        "city": "...",
+        "country": "Indonesia"
+    }
+}
+```
+
+### 4. Company Information (Combined)
+
+```
+GET /company-information?domain=paper.id
+```
+
+Menggabungkan ketiga endpoint di atas dalam satu response. Setiap bagian diproses independen — jika salah satu sumber gagal (misalnya domain tidak terdaftar di RDAP), bagian lain tetap dikembalikan normal.
+
+**Response (200):**
+```json
+{
+    "website": { "...": "hasil dari /extract/website" },
+    "domain": { "...": "hasil dari /extract/domain" },
+    "location": { "...": "hasil dari /extract/location" }
+}
+```
+
+Jika salah satu sumber gagal diambil:
+```json
+{
+    "website": { "...": "..." },
+    "domain": { "error": "Domain tidak ditemukan atau RDAP tidak tersedia untuk: ..." },
+    "location": { "...": "..." }
+}
+```
+
+### Kode status HTTP yang digunakan
+
+| Status | Kondisi |
+|---|---|
+| 200 | Berhasil |
+| 422 | Validasi input gagal (field kosong/format salah) |
+| 400 | Gagal memproses request (API eksternal gagal, data tidak ditemukan) |
+
+## Testing dengan Postman
+
+1. Import `Data-Acquisition-Engine.postman_collection.json` dan `Data-Acquisition-Engine.postman_environment.json` ke Postman.
+2. Pilih environment **"Data Acquisition Engine - Local"** di pojok kanan atas Postman.
+3. Untuk endpoint `POST`, pastikan header `Accept: application/json` sudah terpasang (sudah termasuk di collection) — ini penting agar Laravel mengembalikan JSON, bukan redirect HTML, saat terjadi error validasi.
+4. Jalankan request satu per satu, atau gunakan Collection Runner untuk menjalankan semuanya sekaligus.
+
+**Catatan:** endpoint `/extract/*` dan `/company-information` dikecualikan dari CSRF protection (lihat `bootstrap/app.php`) khusus untuk mempermudah testing lewat Postman, karena Postman tidak memiliki CSRF token seperti browser yang membuka halaman aplikasi.
+
+## Asumsi
+
+- Input `domain` pada endpoint `/extract/domain` dan `/company-information` diasumsikan berupa nama domain murni (contoh: `paper.id`), bukan URL lengkap.
+- Endpoint `/extract/website` membutuhkan URL lengkap dengan scheme (`https://...`), bukan sekadar nama domain.
+- Untuk endpoint `/company-information`, URL website yang di-fetch untuk metadata diasumsikan `https://{domain}` (HTTPS default).
+- Hasil pencarian Nominatim yang diambil adalah hasil pertama (paling relevan) dari daftar kandidat yang dikembalikan API.
+- Data RDAP mengasumsikan struktur response standar (`vcardArray`, `events`, `entities`) sesuai spesifikasi RDAP; TLD dengan implementasi RDAP non-standar berpotensi menghasilkan field kosong.
+
+## Kendala & Keterbatasan
+
+- **Rate limiting API eksternal:** RDAP dan Nominatim adalah layanan publik gratis tanpa API key, sehingga memiliki rate limit yang tidak terdokumentasi secara pasti. Penggunaan intensif/testing berulang berpotensi terkena pembatasan sementara dari pihak penyedia.
+- **Ketersediaan data bervariasi per TLD:** tidak semua TLD memiliki dukungan RDAP penuh atau field data yang lengkap (misalnya beberapa domain `.id` memiliki data registrar yang tersembunyi/redacted karena kebijakan privasi registry).
+- **Parsing HTML tidak selalu sempurna:** `DOMDocument` PHP cukup toleran terhadap HTML yang tidak valid, namun beberapa website dengan struktur non-standar atau yang memerlukan JavaScript rendering (SPA) mungkin tidak menghasilkan metadata yang akurat karena hanya HTML mentah yang diambil (tanpa eksekusi JavaScript).
+- **Nominatim membutuhkan User-Agent yang valid:** tanpa header ini, request berpotensi ditolak oleh kebijakan penggunaan resmi OpenStreetMap.
+- **CSRF dikecualikan untuk endpoint API:** karena endpoint ini juga diuji manual lewat Postman (bukan hanya lewat form di browser), proteksi CSRF dikecualikan khusus untuk path `/extract/*` dan `/company-information`. Endpoint ini tidak menyimpan/mengubah data sensitif pengguna, sehingga risiko keamanannya tergolong rendah untuk konteks aplikasi ini.
