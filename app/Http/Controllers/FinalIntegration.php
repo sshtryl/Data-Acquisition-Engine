@@ -5,6 +5,7 @@ use App\Services\MetadataExtractorService;
 use App\Services\DomainIntelligenceService;
 use App\Services\CompanyLocationService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class FinalIntegration extends Controller
 {
@@ -24,9 +25,15 @@ class FinalIntegration extends Controller
 
     public function show(Request $request)
     {
-        $validated = $request->validate([
-            'domain' => 'required|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'domain' => 'required|string',
+            ]);
+        } catch (ValidationException $e) {
+            return response()->json([
+                'error' => $e->errors()['domain'][0] ?? 'Format domain tidak valid. Contoh: paper.id',
+            ], 422);
+        }
 
         $domain = $this->normalizeDomain($validated['domain']);
         if (!preg_match('/^([a-z0-9-]+\.)+[a-z]{2,}$/i', $domain)) {
